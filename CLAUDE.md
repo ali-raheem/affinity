@@ -39,11 +39,11 @@ npm run icons                       # regenerate icons/ from scripts/make_icons.
 
 ## Shared origin
 
-Planned path `/affinity/`. The manifest `id` is `/affinity/` (never change it once released). localStorage keys use the `affinity.` prefix. `sw.js` uses cache prefix `affinity-`, handles only requests inside its scope, reads only its own cache (never `caches.match()`), precaches with `cache: 'reload'` and fetches with `cache: 'no-cache'`. See `../CLAUDE.md`.
+Deployed at `/affinity/`. The manifest `id` is `/affinity/` (never change it once released). localStorage keys use the `affinity.` prefix. `sw.js` uses cache prefix `affinity-`, handles only requests inside its scope, reads only its own cache (never `caches.match()`), precaches with `cache: 'reload'` and fetches with `cache: 'no-cache'`. See `../CLAUDE.md`.
 
 ## Deployment
 
-Not deployed yet. To ship it at https://shoryuken.me/affinity/, follow "Adding a new app" in `../CLAUDE.md` (nginx block, homepage card), then after `npm test` and `npm run bump`:
+Live at https://shoryuken.me/affinity/ (`/var/www/shoryuken.me/affinity/`, with its own nginx `location` blocks and a card in `../webroot/index.html`; server conventions are in `../CLAUDE.md`). After `npm test` and `npm run bump`, ship only the served files:
 
 ```bash
 rsync -a --delete --chmod=D755,F644 index.html manifest.webmanifest sw.js css js icons root@185.163.204.17:/var/www/shoryuken.me/affinity/
