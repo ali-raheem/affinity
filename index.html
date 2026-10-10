@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Affinity</title>
+  <meta name="description" content="Watch a population of peptide keys evolve to fit random receptor locks. A genetic algorithm with a toy binding model. Works offline.">
+  <meta name="theme-color" content="#020507">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Icon sprite: 24×24 line icons drawn in currentColor; use as <svg class="icon"><use href="#i-name"/></svg>. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5.5" width="3.5" height="13" rx="1" fill="currentColor"/><rect x="14" y="5.5" width="3.5" height="13" rx="1" fill="currentColor"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M5.5 6v12l9-6z" fill="currentColor"/><path d="M18.5 6v12"/></symbol>
+    <symbol id="i-pocket" viewBox="0 0 24 24"><path d="M3 5h18v7h-2.5v-3h-3v4h-3V8h-3v5h-3V9H3z"/><path d="M5 20v-4h2v-2h3v3h3v-4h3v2h3v5z" fill="currentColor" stroke="none" opacity="0.6"/></symbol>
+    <symbol id="i-recent" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7.5V12l3.5 2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h8M16 18h4"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="14" cy="18" r="2"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M3.5 9.5H7L11.5 5.5v13L7 14.5H3.5z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M17.5 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+    <symbol id="i-sound-off" viewBox="0 0 24 24"><path d="M3.5 9.5H7L11.5 5.5v13L7 14.5H3.5z"/><path d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></symbol>
+    <symbol id="i-labels" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M7 9.5h4M13.5 9.5h3.5"/></symbol>
+    <symbol id="i-fullscreen" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
+    <symbol id="i-hide" viewBox="0 0 24 24"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.5"/><path d="M4 4l16 16"/></symbol>
+    <symbol id="i-install" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  </svg>
+
+  <canvas id="view" aria-label="Evolving keys and the receptor they are evolving to fit"></canvas>
+
+  <div id="hud">
+    <header id="cards">
+      <div class="card" id="card-lock">
+        <div class="name"></div>
+        <div class="sub"><span class="mood"></span><span class="seq" aria-label="Pocket lining"></span></div>
+      </div>
+      <div class="card" id="card-best">
+        <div class="name"></div>
+        <div class="sub"><span class="target"></span><span class="div"></span></div>
+        <div class="bar"><i></i></div>
+      </div>
+    </header>
+    <div id="meta"><span id="gen-no"></span> · <span id="clock">00:00</span> · <button id="seed" title="Copy a link that replays this run"></button></div>
+    <ol id="feed" aria-live="polite"></ol>
+
+    <div id="banner" hidden>
+      <div class="kicker"></div>
+      <div class="title"></div>
+      <div class="sub"></div>
+    </div>
+
+    <aside id="pocket" class="panel" hidden aria-label="The receptor pocket"></aside>
+    <aside id="history" class="panel" hidden aria-label="Opened locks"></aside>
+    <aside id="settings" class="panel" hidden aria-label="Settings">
+      <h2>Settings</h2>
+      <button class="row" id="set-install" hidden><svg class="icon"><use href="#i-install"/></svg><span>Install app<small></small></span></button>
+      <button class="row" id="set-sound" role="switch"><svg class="icon"><use href="#i-sound"/></svg><span>Sound</span><i class="switch"></i></button>
+      <button class="row" id="set-labels" role="switch"><svg class="icon"><use href="#i-labels"/></svg><span>Rank and affinity on keys</span><i class="switch"></i></button>
+      <button class="row" id="set-full" role="switch"><svg class="icon"><use href="#i-fullscreen"/></svg><span>Fullscreen</span><i class="switch"></i></button>
+      <button class="row" id="set-hide"><svg class="icon"><use href="#i-hide"/></svg><span>Hide interface<small>tap the screen or press H to bring it back</small></span></button>
+      <dl class="keys">
+        <dt>Space</dt><dd>pause</dd><dt>+ −</dt><dd>speed</dd><dt>N</dt><dd>next lock</dd>
+        <dt>P</dt><dd>pocket</dd><dt>L</dt><dd>opened locks</dd><dt>S</dt><dd>settings</dd>
+        <dt>M</dt><dd>sound</dd><dt>K</dt><dd>key labels</dd><dt>F</dt><dd>fullscreen</dd><dt>H</dt><dd>hide interface</dd>
+      </dl>
+      <p class="version" id="version"></p>
+    </aside>
+
+    <nav id="controls" aria-label="Controls">
+      <button id="btn-pause" title="Pause (Space)" aria-label="Pause"><svg class="icon"><use href="#i-pause"/></svg></button>
+      <button id="btn-speed" title="Evolution speed (+/−)" aria-label="Evolution speed">1×</button>
+      <button id="btn-next" title="Next lock (N)" aria-label="Next lock"><svg class="icon"><use href="#i-next"/></svg></button>
+      <button id="btn-pocket" title="The pocket and how binding is scored (P)" aria-label="The pocket"><svg class="icon"><use href="#i-pocket"/></svg></button>
+      <button id="btn-history" title="Opened locks (L)" aria-label="Opened locks"><svg class="icon"><use href="#i-recent"/></svg></button>
+      <button id="btn-settings" title="Settings (S)" aria-label="Settings"><svg class="icon"><use href="#i-settings"/></svg></button>
+    </nav>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
