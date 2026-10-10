@@ -32,9 +32,36 @@ A deliberately simple but recognisable binding model (`js/chem.js`):
   landscape epistatic.
 - Keys are 14 residues, longer than the groove, so each docks in its best register.
 - ΔG becomes a dissociation constant with Kd = e^(ΔG/RT). The best possible key for each lock is found exactly
-  by dynamic programming, and a lock opens within 0.6 kcal/mol of it.
+  by dynamic programming, and a lock opens within 0.35 kcal/mol of it.
 - Mutations prefer chemically similar residues. If the best key stalls for 10 generations, the mutation rate
   spikes for one generation (stress-induced mutagenesis).
+
+### Plateaus are expected
+
+Sometimes the best key sits still for dozens of generations, then jumps. This is a local optimum, not a bug. For
+example, on the first lock of `#seed=8b60c666`, the best key stalls from generation 16 to 66. A single M→R
+substitution would open the lock, but mutations favour similar residues, so M becomes R only about 0.5% of the
+time. While the survivors wait, they score almost the same, so the population drifts (here E→Y), and the escape
+ends up taking three steps. Real evolution shows the same pattern (punctuated equilibrium and neutral drift), so
+the model leaves it alone.
+
+About 2% of locks never open and are retired after 400 generations (about 21 minutes at 1×).
+
+## Possible future directions
+
+Measured over 600 locks, the current model takes a median of 22 generations per lock (p90 50). 35 of the locks
+had a plateau of at least 40 generations, and 11 were retired unopened.
+
+- **Lower `GIVE_UP`** to about 150 (about 8 minutes at 1×), so a hopeless lock moves on sooner.
+- **Narrate long plateaus,** for example "Stuck on a local optimum. Waiting for a rare mutation…" after about 15
+  stalled generations, so a stall reads as part of the story rather than a freeze.
+- **Raise the rare-substitution floor** in `SIMILAR` (`js/chem.js`) from 0.04 to 0.15. This gives a median of 18
+  generations (p90 37) and cuts the plateaus of 40+ generations from 35 to 21, at the cost of less realistic
+  mutation bias. It doesn't change the retirement count.
+- **Make hypermutation bursts radical:** use uniform substitutions at ×2 instead of similar ones at ×4. Plateaus
+  of 40+ generations fall from 35 to 28.
+
+Any of these changes how existing `#seed=` links replay.
 
 ## Controls
 

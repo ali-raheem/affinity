@@ -27,7 +27,7 @@ npm run icons                       # regenerate icons/ from scripts/make_icons.
 
 ### Randomness and pacing
 
-`world.rng` (seeded) drives locks and evolution, so `#seed=` replays a run exactly. Cosmetic randomness (particles, reverb noise) may use `Math.random`; never use it in `chem.js` or `evolve.js`. Pacing is tuned so a lock takes ~20 generations (p90 ~40) at ~3.2 s each at 1×. Re-check with a quick Node loop over seeds after changing the energy model, `TARGET_GAP` or the GA rates.
+`world.rng` (seeded) drives locks and evolution, so `#seed=` replays a run exactly. Cosmetic randomness (particles, reverb noise) may use `Math.random`; never use it in `chem.js` or `evolve.js`. Pacing: a lock takes a median of ~22 generations (p90 ~50) at ~3.2 s each at 1×. Long plateaus and occasional retirements are deliberate; see "Possible future directions" in `README.md` before "fixing" them. Re-check with a quick Node loop over seeds after changing the energy model, `TARGET_GAP` or the GA rates.
 
 ## Conventions and gotchas
 
