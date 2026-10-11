@@ -1,5 +1,14 @@
 # Affinity
 
+[![CI](https://github.com/ali-raheem/affinity/actions/workflows/ci.yml/badge.svg)](https://github.com/ali-raheem/affinity/actions/workflows/ci.yml) [![GitHub Pages](https://github.com/ali-raheem/affinity/actions/workflows/pages.yml/badge.svg)](https://github.com/ali-raheem/affinity/actions/workflows/pages.yml)
+
+**▶ Try it live: [shoryuken.me/affinity](https://shoryuken.me/affinity/)** · mirror on [GitHub Pages](https://ali-raheem.github.io/affinity/) · installable, works offline
+
+<p align="center">
+  <a href="https://shoryuken.me/affinity/"><img src="docs/screenshots/desktop.webp" alt="Affinity on a desktop browser" width="74%"></a>
+  <a href="https://shoryuken.me/affinity/"><img src="docs/screenshots/mobile.webp" alt="Affinity on a phone" width="22%"></a>
+</p>
+
 Watch evolution crack a lock. A random receptor binding pocket sits at the top of the screen; below it, a
 population of 96 peptide "keys" evolves to bind it. Each generation the best 16 survive and breed, the rest die,
 and their children (crossovers of two survivors, plus a mutation or two) take their places. When the best key
