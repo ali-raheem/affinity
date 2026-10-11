@@ -83,3 +83,7 @@ K key labels · F fullscreen · H hide the interface. The URL carries `#seed=…
 npm run serve   # python3 -m http.server 8080
 npm test        # node --test, no dependencies
 ```
+
+## Licence
+
+[MIT](LICENSE) © 2026 Ali Raheem.
